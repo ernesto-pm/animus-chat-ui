@@ -15,12 +15,17 @@
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
+    "@hey-api/client-axios": "^0.2.11",
     "@remix-run/cloudflare": "^2.14.0",
     "@remix-run/cloudflare-pages": "^2.14.0",
     "@remix-run/react": "^2.14.0",
+    "axios": "^1.7.9",
     "isbot": "^4.1.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.53.2",
+    "remix-auth": "^4.0.0",
+    "remix-auth-form": "^3.0.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241202.0",

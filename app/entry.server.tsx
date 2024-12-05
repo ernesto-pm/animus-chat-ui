@@ -9,6 +9,13 @@ import { RemixServer } from "@remix-run/react";
 import { isbot } from "isbot";
 import { renderToReadableStream } from "react-dom/server";
 
+import {client} from "~/services/openapi";
+
+// ToDo: add configuration depending on the env
+client.setConfig({
+    baseURL: 'http://localhost:8000'
+})
+
 const ABORT_DELAY = 5000;
 
 export default async function handleRequest(

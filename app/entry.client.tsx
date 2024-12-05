@@ -8,6 +8,13 @@ import { RemixBrowser } from "@remix-run/react";
 import { startTransition, StrictMode } from "react";
 import { hydrateRoot } from "react-dom/client";
 
+import {client} from "~/services/openapi";
+
+// ToDo: add configuration depending on the env
+client.setConfig({
+    baseURL: 'http://localhost:8000'
+})
+
 startTransition(() => {
   hydrateRoot(
     document,
