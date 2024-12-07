@@ -1,72 +1,105 @@
-import {useFetcher} from "@remix-run/react";
-import {json} from "@remix-run/cloudflare";
+import {LoaderFunctionArgs} from "@remix-run/cloudflare";
+import { useForm } from "react-hook-form";
+import {
+    createSystemMessageSystemMessagesPost,
+    getAllUsersUsersGet
+} from "~/services/openapi";
+import {useLoaderData} from "@remix-run/react";
+import {authenticate} from "~/services/auth.server";
 
-export async function action({ request }) {
-    const formData = await request.formData();
-    const name = formData.get('name');
-    const content = formData.get('content');
+export async function loader({ request }: LoaderFunctionArgs) {
+    const user = await authenticate(request, "/new/system-message") // we specify that we want to return here
+    const users = await getAllUsersUsersGet()
 
-    try {
-        // Make your API call here
-        const response = await fetch('http://localhost:3000/system_messages', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name, content }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to create system message');
-        }
-
-        return json({ success: true });
-    } catch (error) {
-        return json({ error: error.message }, { status: 400 });
-    }
+    return {user, userList: users.data}
 }
 
-export default function NewSystemPrompt() {
-    const fetcher = useFetcher()
+interface FormArguments {
+    name: string
+    content: string
+    isPublic: boolean | undefined
+    overrideAssociatedUserId: string | undefined
+}
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        fetcher.submit(formData, { method: 'POST' });  // Specify POST method here
-    };
+export default function NewSystemMessage() {
+    const {user, userList} = useLoaderData<typeof loader>()
+    const { register, handleSubmit, formState: { isSubmitSuccessful, errors, isSubmitting} } = useForm<FormArguments>();
+
+    async function onSubmit(data: FormArguments) {
+        let associatedUserId = user.id
+        if (data.overrideAssociatedUserId && data.overrideAssociatedUserId !== "") {
+            associatedUserId = data.overrideAssociatedUserId!
+        }
+
+        let isPublic = false
+        if (data.isPublic) {
+            isPublic = data.isPublic
+        }
+
+        const response = await createSystemMessageSystemMessagesPost({body: {
+                name: data.name,
+                content: data.content,
+                associatedUserId: associatedUserId,
+                isPublic: isPublic
+            }
+        })
+
+        if (response.error) {
+            throw response.error
+        }
+    }
 
     return (
         <div className="p-10 flex flex-col space-y-2">
             <div className="text-2xl">
-                Create a new system prompt
+                Create a new system message
             </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col space-y-5">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-5">
                 <div className="flex flex-col space-x-1">
                     <div>Name:</div>
-                    <input name="name" className="p-2"/>
+                    <input {...register("name")} className="p-2"/>
                 </div>
 
                 <div className="flex flex-col space-x-1">
                     <div>Content:</div>
-                    <textarea rows={5} name="content" className="p-2"/>
+                    <textarea {...register("content")} className="p-2"/>
                 </div>
 
-                <button
-                    type="submit"
-                    className="border-2 p-0.5 rounded-md"
-                    disabled={fetcher.state === 'submitting'}
-                >
-                    {fetcher.state === 'submitting' ? 'Creating...' : 'Create'}
+                {
+                    user.is_admin &&
+                    <div>
+                        Make it available for all users? (Public)&nbsp;
+                        <input type="checkbox" {...register("isPublic")} />
+                    </div>
+                }
+
+                {
+                    (user.is_admin && userList) &&
+                        <div>
+                            <div>
+                                Associate with user:
+                            </div>
+                            <select
+                                {...register("overrideAssociatedUserId")}
+                            >
+                                <option/>
+                                {
+                                    userList.map(user => <option
+                                        key={user.id}
+                                        value={user.id}>
+                                        {user.name}
+                                    </option>)
+                                }
+                            </select>
+                        </div>
+                }
+
+                <button type="submit" className="border-2 p-0.5 rounded-md" disabled={isSubmitting}>
+                    {isSubmitting ? 'Creating...' : 'Create'}
                 </button>
 
-                {fetcher.data?.error && (
-                    <div className="text-red-500">{fetcher.data.error}</div>
-                )}
-
-                {fetcher.data?.success && (
-                    <div className="text-green-500">System message created successfully!</div>
-                )}
+                {isSubmitSuccessful && "Success!"}
             </form>
         </div>
     )

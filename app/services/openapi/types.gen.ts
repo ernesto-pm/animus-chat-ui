@@ -4,7 +4,16 @@ export type AnimusBetaPersona = {
     id: string;
     name: string;
     details: (string | null);
-    associated_user_id: (string | null);
+    associated_user_id: string;
+    is_public: (boolean | null);
+};
+
+export type AnimusBetaSystemMessage = {
+    id: string;
+    name: string;
+    content: (string | null);
+    is_public: (boolean | null);
+    associated_user_id: string;
 };
 
 export type AnimusBetaUser = {
@@ -23,6 +32,14 @@ export type CreatePersonasBody = {
     name: string;
     details: (string | null);
     associatedUserId: string;
+    isPublic: boolean;
+};
+
+export type CreateSystemMessageBody = {
+    name: string;
+    content: string;
+    associatedUserId: (string | null);
+    isPublic: boolean;
 };
 
 export type HTTPValidationError = {
@@ -102,3 +119,35 @@ export type CreatePersonaPersonasPostData = {
 export type CreatePersonaPersonasPostResponse = (AnimusBetaPersona);
 
 export type CreatePersonaPersonasPostError = (HTTPValidationError);
+
+export type GetPersonasForUserPersonasForUserUserIdGetData = {
+    path: {
+        user_id: string;
+    };
+};
+
+export type GetPersonasForUserPersonasForUserUserIdGetResponse = (Array<AnimusBetaPersona>);
+
+export type GetPersonasForUserPersonasForUserUserIdGetError = (HTTPValidationError);
+
+export type GetPublicSystemMessagesSystemMessagesPublicGetResponse = (Array<AnimusBetaSystemMessage>);
+
+export type GetPublicSystemMessagesSystemMessagesPublicGetError = unknown;
+
+export type GetPublicMessagesForUserSystemMessagesForUserUserIdGetData = {
+    path: {
+        user_id: string;
+    };
+};
+
+export type GetPublicMessagesForUserSystemMessagesForUserUserIdGetResponse = (Array<AnimusBetaSystemMessage>);
+
+export type GetPublicMessagesForUserSystemMessagesForUserUserIdGetError = (HTTPValidationError);
+
+export type CreateSystemMessageSystemMessagesPostData = {
+    body: CreateSystemMessageBody;
+};
+
+export type CreateSystemMessageSystemMessagesPostResponse = (AnimusBetaSystemMessage);
+
+export type CreateSystemMessageSystemMessagesPostError = (HTTPValidationError);
