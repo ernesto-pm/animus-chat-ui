@@ -21,6 +21,7 @@
     "@remix-run/react": "^2.14.0",
     "axios": "^1.7.9",
     "isbot": "^4.1.0",
+    "lucide-react": "^0.468.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.53.2",

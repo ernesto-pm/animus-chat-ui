@@ -1,0 +1,6 @@
+Error downloading http://127.0.0.1:8000/openapi.json 
+fetch failed
+JSONParserError: Error downloading http://127.0.0.1:8000/openapi.json 
+fetch failed
+    at download (/Users/ghost/.npm/_npx/a3521d5d8f143c4a/node_modules/@apidevtools/json-schema-ref-parser/dist/lib/resolvers/http.js:113:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)

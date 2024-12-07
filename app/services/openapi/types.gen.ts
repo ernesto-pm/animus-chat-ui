@@ -28,6 +28,15 @@ export type AnimusBetaUser = {
     is_admin: boolean;
 };
 
+export type CreateCharacterParams = {
+    name: string;
+    display_name: string;
+    details: string;
+    associated_user_id: (string | null);
+    is_public: (boolean | null);
+    additional_attributes: (unknown | null);
+};
+
 export type CreatePersonasBody = {
     name: string;
     details: (string | null);
@@ -151,3 +160,11 @@ export type CreateSystemMessageSystemMessagesPostData = {
 export type CreateSystemMessageSystemMessagesPostResponse = (AnimusBetaSystemMessage);
 
 export type CreateSystemMessageSystemMessagesPostError = (HTTPValidationError);
+
+export type CreateCharacterCharactersPostData = {
+    body: CreateCharacterParams;
+};
+
+export type CreateCharacterCharactersPostResponse = (AnimusBetaPersona);
+
+export type CreateCharacterCharactersPostError = (HTTPValidationError);
