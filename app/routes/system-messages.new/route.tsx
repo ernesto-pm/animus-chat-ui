@@ -1,27 +1,29 @@
 import {LoaderFunctionArgs} from "@remix-run/cloudflare";
 import { useForm } from "react-hook-form";
-import {createPersonaPersonasPost, getAllUsersUsersGet} from "~/services/openapi";
+import {
+    createSystemMessage, getAllUsers
+} from "~/services/openapi";
 import {useLoaderData} from "@remix-run/react";
 import {authenticate} from "~/services/auth.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-    const user = await authenticate(request, "/new/persona") // we specify that we want to return here
-    const users = await getAllUsersUsersGet()
+    const user = await authenticate(request, "/new/system-message") // we specify that we want to return here
+    const users = await getAllUsers()
 
     return {user, userList: users.data}
 }
 
 interface FormArguments {
     name: string
-    details: string
+    content: string
     isPublic: boolean | undefined
     overrideAssociatedUserId: string | undefined
 }
 
-export default function NewPersona() {
+export default function NewSystemMessage() {
     const {user, userList} = useLoaderData<typeof loader>()
+    const { register, handleSubmit, formState: { isSubmitSuccessful, errors, isSubmitting} } = useForm<FormArguments>();
 
-    const { register, handleSubmit, formState: { isSubmitSuccessful, isSubmitting} } = useForm<FormArguments>();
     async function onSubmit(data: FormArguments) {
         let associatedUserId = user.id
         if (data.overrideAssociatedUserId && data.overrideAssociatedUserId !== "") {
@@ -33,12 +35,13 @@ export default function NewPersona() {
             isPublic = data.isPublic
         }
 
-        const response = await createPersonaPersonasPost({body: {
+        const response = await createSystemMessage({body: {
                 name: data.name,
-                details: data.details,
+                content: data.content,
                 associatedUserId: associatedUserId,
                 isPublic: isPublic
-        }})
+            }
+        })
 
         if (response.error) {
             throw response.error
@@ -48,7 +51,7 @@ export default function NewPersona() {
     return (
         <div className="p-10 flex flex-col space-y-2">
             <div className="text-2xl">
-                Create a new persona
+                Create a new system message
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-5">
@@ -58,8 +61,8 @@ export default function NewPersona() {
                 </div>
 
                 <div className="flex flex-col space-x-1">
-                    <div>Details:</div>
-                    <input {...register("details")} className="p-2"/>
+                    <div>Content:</div>
+                    <textarea {...register("content")} className="p-2"/>
                 </div>
 
                 {
@@ -72,23 +75,23 @@ export default function NewPersona() {
 
                 {
                     (user.is_admin && userList) &&
-                    <div>
                         <div>
-                            Associate with user:
+                            <div>
+                                Associate with user:
+                            </div>
+                            <select
+                                {...register("overrideAssociatedUserId")}
+                            >
+                                <option/>
+                                {
+                                    userList.map(user => <option
+                                        key={user.id}
+                                        value={user.id}>
+                                        {user.name}
+                                    </option>)
+                                }
+                            </select>
                         </div>
-                        <select
-                            {...register("overrideAssociatedUserId")}
-                        >
-                            <option/>
-                            {
-                                userList.map(user => <option
-                                    key={user.id}
-                                    value={user.id}>
-                                    {user.name}
-                                </option>)
-                            }
-                        </select>
-                    </div>
                 }
 
                 <button type="submit" className="border-2 p-0.5 rounded-md" disabled={isSubmitting}>

@@ -1,10 +1,11 @@
 import type { LinksFunction } from "@remix-run/cloudflare";
 import {
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
+    isRouteErrorResponse,
+    Links,
+    Meta,
+    Outlet,
+    Scripts,
+    ScrollRestoration, useRouteError,
 } from "@remix-run/react";
 
 import "./tailwind.css";
@@ -42,4 +43,43 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return <Outlet />;
+}
+
+export function ErrorBoundary() {
+    const error = useRouteError();
+
+    let errorMessage = "An unexpected error occurred.";
+    let status = 500;
+
+    if (isRouteErrorResponse(error)) {
+        errorMessage = error.data;
+        status = error.status;
+    } else if (error instanceof Error) {
+        errorMessage = error.message;
+    }
+
+    return (
+        <html>
+        <head>
+            <title>Error</title>
+            <Meta />
+            <Links />
+        </head>
+        <body>
+        <div className="flex min-h-screen items-center justify-center">
+            <div className="rounded-lg bg-white p-8 text-center shadow-xl">
+                <h1 className="mb-4 text-2xl font-bold text-black">Error {status}</h1>
+                <p className="text-gray-600">{errorMessage}</p>
+                <a
+                href="/"
+                className="mt-4 inline-block rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                >
+                Return Home
+            </a>
+        </div>
+        </div>
+        <Scripts />
+        </body>
+</html>
+);
 }

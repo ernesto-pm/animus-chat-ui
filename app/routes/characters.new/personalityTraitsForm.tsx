@@ -1,5 +1,5 @@
 import {Control, useFieldArray} from "react-hook-form";
-import {FormArguments} from "~/routes/new.character/route";
+import {FormArguments} from "~/routes/characters.new/route";
 import {Plus, Trash2} from "lucide-react";
 
 interface PropTypes {

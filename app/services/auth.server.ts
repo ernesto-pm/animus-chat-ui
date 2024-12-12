@@ -2,7 +2,7 @@
 // strategies will return
 import {Authenticator} from "remix-auth";
 import { FormStrategy } from "remix-auth-form"
-import {AnimusBetaUser, loginUsersLoginPost} from "~/services/openapi";
+import {AnimusBetaUser, loginUser} from "~/services/openapi";
 import {redirect} from "@remix-run/cloudflare";
 import {sessionStorage} from "~/services/session.server";
 
@@ -13,10 +13,10 @@ authenticator.use(
         const email = form.get("email") as string;
         const password = form.get("password") as string;
 
-        const response = await loginUsersLoginPost({body: {email: email, password: password}})
+        const response = await loginUser({body: {email: email, password: password}})
         if (response.error) {
             //console.log(JSON.stringify(response.error))
-            throw Error(response.error.detail)
+            throw Error(response.error.detail?.toString())
         }
 
         return response.data

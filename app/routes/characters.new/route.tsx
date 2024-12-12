@@ -1,17 +1,14 @@
 import {LoaderFunctionArgs} from "@remix-run/cloudflare";
 import { useForm } from "react-hook-form";
-import {
-    createCharacterCharactersPost,
-    getAllUsersUsersGet
-} from "~/services/openapi";
+import {createCharacter, getAllUsers} from "~/services/openapi";
 import {useLoaderData} from "@remix-run/react";
 import {authenticate} from "~/services/auth.server";
-import PersonalityTraitsForm from "~/routes/new.character/personalityTraitsForm";
-import SkillsForm from "~/routes/new.character/skilsForm";
+import PersonalityTraitsForm from "~/routes/characters.new/personalityTraitsForm";
+import SkillsForm from "~/routes/characters.new/skilsForm";
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const user = await authenticate(request, "/new/character") // we specify that we want to return here
-    const users = await getAllUsersUsersGet()
+    const users = await getAllUsers()
 
     return {user, userList: users.data}
 }
@@ -41,7 +38,7 @@ export default function NewCharacter() {
     const { register, control, handleSubmit, formState: { isSubmitSuccessful, errors, isSubmitting} } = useForm<FormArguments>({
         defaultValues: {
             personalityTraits: [
-                {name: "details", value: ""},
+                {name: "general details", value: ""},
                 {name: "fears", value: ""},
                 {name: "desires", value: ""},
                 {name: "values", value: ""}
@@ -60,7 +57,7 @@ export default function NewCharacter() {
             isPublic = data.isPublic
         }
 
-        const response = await createCharacterCharactersPost({
+        const response = await createCharacter({
             body: {
                 name: data.name,
                 display_name: data.displayName,
