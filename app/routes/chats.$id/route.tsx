@@ -3,7 +3,6 @@ import {LoaderFunctionArgs} from "@remix-run/cloudflare";
 import {getChat, ollamaDetailedChatPredict} from "~/services/openapi";
 import {useEffect, useRef, useState} from "react";
 import {Send, Settings} from "lucide-react";
-import {Popover, PopoverContent, PopoverTrigger} from "~/components/ui/popover";
 import {
     Drawer, DrawerClose,
     DrawerContent,
@@ -55,7 +54,7 @@ export default function Chat() {
     async function handleSubmit() {
         let response = await ollamaDetailedChatPredict({
             body: {
-                modelVersion: chat!.model_version,
+                modelVersion: 'llama3.1-70B-abliterated-with-template:latest',
                 systemMessageContent: systemMessage!.content!,
                 personaName: persona!.name,
                 personaDetails: persona!.details!,
